@@ -5,16 +5,16 @@ import 'package:date_time_picker/date_time_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_facebook_login/flutter_facebook_login.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:restart_app/restart_app.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:flutter/cupertino.dart';
 
 class Profile extends StatefulWidget {
-  final String email, name, gender, dob, path;
-
-  Profile({Key key, this.dob, this.email, this.gender, this.name, this.path})
-      : super(key: key);
+  Profile({Key key}) : super(key: key);
   @override
   _ProfileState createState() => _ProfileState();
 }
@@ -22,31 +22,84 @@ class Profile extends StatefulWidget {
 class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
   bool _status = true;
   final FocusNode myFocusNode = FocusNode();
-  String gender = "", dob = "", name = "";
+  String gender = "", dob = "", name = "", path = "", email = "";
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final _firebaseStorage = FirebaseStorage.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final FacebookLogin _fbLogin = new FacebookLogin();
+
   User user;
   File imageFile;
   final _formKey = GlobalKey<FormState>();
 
+  Future<void> getData() async {
+    User user = _auth.currentUser;
+    setState(() {
+      email = user.email;
+    });
+    DocumentSnapshot<Map<String, dynamic>> userData = await FirebaseFirestore
+        .instance
+        .collection("users")
+        .doc(user.uid)
+        .get();
+    Map<String, dynamic> decode = userData.data();
+    if (decode != null) {
+      for (var u_name in decode.keys) {
+        if (u_name == 'gender') {
+          setState(() {
+            gender = decode[u_name];
+          });
+        } else if (u_name == 'dob') {
+          setState(() {
+            dob = decode[u_name];
+          });
+        } else {
+          setState(() {
+            name = decode[u_name];
+          });
+        }
+      }
+    } else {
+      FirebaseFirestore.instance
+          .collection("users")
+          .doc(user.uid)
+          .set({'name': "", 'dob': "", 'gender': ""});
+    }
+  }
+
+  Future<void> getPath() async {
+    User user = _auth.currentUser;
+    try {
+      await _firebaseStorage
+          .ref(user.uid)
+          .child(user.uid)
+          .getDownloadURL()
+          .then((value) {
+        if (value.isNotEmpty) {
+          setState(() {
+            path = value;
+          });
+        }
+      });
+    } catch (e) {
+      setState(() {
+        path = "";
+      });
+    }
+  }
+
+  Future<void> getInfo() async {
+    await getData();
+    await getPath();
+    print(email);
+    print(name);
+    print(dob);
+    print(gender);
+  }
+
   @override
   void initState() {
-    if (widget.name.isNotEmpty) {
-      setState(() {
-        name = widget.name;
-      });
-    }
-    if (widget.dob.isNotEmpty) {
-      setState(() {
-        dob = widget.dob;
-      });
-    }
-    if (widget.gender.isNotEmpty) {
-      setState(() {
-        gender = widget.gender;
-      });
-    }
-
+    getInfo();
     super.initState();
   }
 
@@ -55,6 +108,27 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
     return new Scaffold(
         appBar: AppBar(
           title: Text("Profile"),
+          actions: [
+            IconButton(
+                onPressed: () async {
+                  for (UserInfo user in _auth.currentUser.providerData) {
+                    if (user.providerId == "facebook.com") {
+                      print("Facebook");
+                      await _auth.signOut();
+                      await _fbLogin.logOut();
+                    } else if (user.providerId == "google.com") {
+                      print("Google");
+                      await _auth.signOut();
+                      await _googleSignIn.signOut();
+                    } else {
+                      print("Email");
+                      await _auth.signOut();
+                    }
+                  }
+                  Restart.restartApp();
+                },
+                icon: Icon(Icons.logout))
+          ],
         ),
         body: new Container(
           color: Colors.white,
@@ -81,15 +155,14 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                                         height: 140.0,
                                         decoration: new BoxDecoration(
                                           shape: BoxShape.circle,
-                                          image: widget.path.isEmpty
+                                          image: path.isEmpty
                                               ? new DecorationImage(
                                                   image: new ExactAssetImage(
                                                       'assets/images/profilePic.png'),
                                                   fit: BoxFit.cover,
                                                 )
                                               : new DecorationImage(
-                                                  image:
-                                                      NetworkImage(widget.path),
+                                                  image: NetworkImage(path),
                                                   fit: BoxFit.cover,
                                                 ),
                                         ))
@@ -195,10 +268,7 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                                   mainAxisSize: MainAxisSize.max,
                                   children: <Widget>[
                                     new Flexible(
-                                      child: new TextFormField(
-                                        initialValue: widget.email,
-                                        enabled: false,
-                                      ),
+                                      child: new Text(email),
                                     ),
                                   ],
                                 )),
@@ -230,18 +300,28 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                                   mainAxisSize: MainAxisSize.max,
                                   children: <Widget>[
                                     new Flexible(
-                                      child: new TextFormField(
-                                        initialValue: name,
-                                        decoration: const InputDecoration(
-                                            hintText: "Enter Your Name"),
-                                        enabled: !_status,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            name = value;
-                                          });
-                                        },
-                                        validator: validateName,
-                                      ),
+                                      child: !_status
+                                          ? TextFormField(
+                                              initialValue: name,
+                                              decoration: const InputDecoration(
+                                                  hintText: "Enter Your Name"),
+                                              enabled: !_status,
+                                              onChanged: (value) {
+                                                setState(() {
+                                                  name = value;
+                                                });
+                                              },
+                                              validator: validateName,
+                                            )
+                                          : name.isEmpty
+                                              ? TextFormField(
+                                                  initialValue: name,
+                                                  decoration: InputDecoration(
+                                                      hintText:
+                                                          "Enter Your Name"),
+                                                  enabled: false,
+                                                )
+                                              : Text(name),
                                     ),
                                   ],
                                 )),
@@ -272,9 +352,9 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                                 child: new Row(
                                   mainAxisSize: MainAxisSize.max,
                                   children: <Widget>[
-                                    !_status
-                                        ? new Flexible(
-                                            child: new DateTimePicker(
+                                    new Flexible(
+                                      child: !_status
+                                          ? new DateTimePicker(
                                               firstDate: DateTime(1900),
                                               lastDate: DateTime.now(),
                                               initialDate: dob.isEmpty
@@ -293,13 +373,17 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                                                 else
                                                   return null;
                                               },
-                                            ),
-                                          )
-                                        : new Flexible(
-                                            child: new TextFormField(
-                                            initialValue: dob,
-                                            enabled: false,
-                                          )),
+                                            )
+                                          : dob.isEmpty
+                                              ? TextFormField(
+                                                  initialValue: dob,
+                                                  decoration: InputDecoration(
+                                                      hintText:
+                                                          "Enter Date Of Birth"),
+                                                  enabled: false,
+                                                )
+                                              : Text(dob),
+                                    ),
                                   ],
                                 )),
                             Padding(
@@ -344,12 +428,18 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                                                         MainAxisSize.max,
                                                     children: <Widget>[
                                                       new Flexible(
-                                                          child:
-                                                              new TextFormField(
+                                                          child: gender.isEmpty
+                                                              ? TextFormField(
                                                                   initialValue:
                                                                       gender,
+                                                                  decoration:
+                                                                      InputDecoration(
+                                                                          hintText:
+                                                                              "Select Gender"),
                                                                   enabled:
-                                                                      false)),
+                                                                      false,
+                                                                )
+                                                              : Text(gender)),
                                                     ],
                                                   )),
                                             ])))

@@ -6,10 +6,7 @@ import 'package:hospital/symptomList.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 
 class Navigate extends StatefulWidget {
-  final String email, name, gender, dob, path;
-
-  Navigate({Key key, this.dob, this.email, this.gender, this.name, this.path})
-      : super(key: key);
+  Navigate({Key key}) : super(key: key);
   @override
   _NavigateState createState() => _NavigateState();
 }
@@ -19,15 +16,7 @@ class _NavigateState extends State<Navigate> {
       PersistentTabController(initialIndex: 0);
 
   List<Widget> _buildScreens() {
-    return [
-      SymptomList(),
-      Profile(
-          email: widget.email,
-          dob: widget.dob,
-          gender: widget.gender,
-          name: widget.name,
-          path: widget.path)
-    ];
+    return [SymptomList(), Profile()];
   }
 
   List<PersistentBottomNavBarItem> _navBarsItems() {
