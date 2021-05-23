@@ -116,7 +116,8 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                       print("Facebook");
                       await _auth.signOut();
                       await _fbLogin.logOut();
-                    } else if (user.providerId == "google.com") {
+                    }
+                    if (user.providerId == "google.com") {
                       print("Google");
                       await _auth.signOut();
                       await _googleSignIn.signOut();
@@ -125,6 +126,7 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                       await _auth.signOut();
                     }
                   }
+                  Future.delayed(Duration(seconds: 2));
                   Restart.restartApp();
                 },
                 icon: Icon(Icons.logout))
