@@ -8,7 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:future_progress_dialog/future_progress_dialog.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:hospital/loginPage.dart';
 import 'package:restart_app/restart_app.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
@@ -156,9 +158,12 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                   await showDialog(
                     context: context,
                     builder: (context) => FutureProgressDialog(
-                        Restart.restartApp(),
+                        Future.delayed(Duration(seconds: 2)),
                         message: Text('Loading...')),
                   );
+
+                  //Phoenix.rebirth(context);
+                  Restart.restartApp();
                 },
                 icon: Icon(Icons.logout))
           ],
