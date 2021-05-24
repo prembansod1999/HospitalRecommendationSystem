@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:future_progress_dialog/future_progress_dialog.dart';
 import 'package:multi_select_item/multi_select_item.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -379,7 +380,12 @@ class _SymptomListState extends State<SymptomList> {
                 timeInSecForIos: 1);
           } else {
             arr.add(locationStr);
-            Map<String, dynamic> decoded = await getHospitalList(arr);
+            Map<String, dynamic> decoded = await showDialog(
+              context: context,
+              builder: (context) => FutureProgressDialog(getHospitalList(arr),
+                  message: Text('Loading...')),
+            );
+
             hospitalName.clear();
             hospitalAddr.clear();
             review.clear();

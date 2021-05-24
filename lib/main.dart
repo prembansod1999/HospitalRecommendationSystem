@@ -5,7 +5,6 @@ import 'loginPage.dart';
 
 import 'navigate.dart';
 
-bool stat = false;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();

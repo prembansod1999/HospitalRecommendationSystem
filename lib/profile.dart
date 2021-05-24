@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
+import 'package:future_progress_dialog/future_progress_dialog.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:restart_app/restart_app.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -91,6 +92,7 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
   Future<void> getInfo() async {
     await getData();
     await getPath();
+
     print(email);
     print(name);
     print(dob);
@@ -99,8 +101,8 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
 
   @override
   void initState() {
-    getInfo();
     super.initState();
+    getInfo();
   }
 
   @override
@@ -114,20 +116,49 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                   for (UserInfo user in _auth.currentUser.providerData) {
                     if (user.providerId == "facebook.com") {
                       print("Facebook");
-                      await _auth.signOut();
-                      await _fbLogin.logOut();
+                      await showDialog(
+                        context: context,
+                        builder: (context) => FutureProgressDialog(
+                            _auth.signOut(),
+                            message: Text('Loading...')),
+                      );
+                      await showDialog(
+                        context: context,
+                        builder: (context) => FutureProgressDialog(
+                            _fbLogin.logOut(),
+                            message: Text('Loading...')),
+                      );
                     }
                     if (user.providerId == "google.com") {
                       print("Google");
-                      await _auth.signOut();
-                      await _googleSignIn.signOut();
+                      await showDialog(
+                        context: context,
+                        builder: (context) => FutureProgressDialog(
+                            _auth.signOut(),
+                            message: Text('Loading...')),
+                      );
+                      await showDialog(
+                        context: context,
+                        builder: (context) => FutureProgressDialog(
+                            _googleSignIn.signOut(),
+                            message: Text('Loading...')),
+                      );
                     } else {
                       print("Email");
-                      await _auth.signOut();
+                      await showDialog(
+                        context: context,
+                        builder: (context) => FutureProgressDialog(
+                            _auth.signOut(),
+                            message: Text('Loading...')),
+                      );
                     }
                   }
-                  Future.delayed(Duration(seconds: 2));
-                  Restart.restartApp();
+                  await showDialog(
+                    context: context,
+                    builder: (context) => FutureProgressDialog(
+                        Restart.restartApp(),
+                        message: Text('Loading...')),
+                  );
                 },
                 icon: Icon(Icons.logout))
           ],

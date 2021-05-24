@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:hospital/diseaseList.dart';
 import 'package:hospital/profile.dart';
 import 'package:hospital/symptomList.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
@@ -16,7 +17,7 @@ class _NavigateState extends State<Navigate> {
       PersistentTabController(initialIndex: 0);
 
   List<Widget> _buildScreens() {
-    return [SymptomList(), Profile()];
+    return [SymptomList(), DiseaseList(), Profile()];
   }
 
   List<PersistentBottomNavBarItem> _navBarsItems() {
@@ -24,6 +25,12 @@ class _NavigateState extends State<Navigate> {
       PersistentBottomNavBarItem(
         icon: Icon(CupertinoIcons.home),
         title: ("Symptoms"),
+        activeColorPrimary: CupertinoColors.activeBlue,
+        inactiveColorPrimary: CupertinoColors.systemGrey,
+      ),
+      PersistentBottomNavBarItem(
+        icon: Icon(CupertinoIcons.search),
+        title: ("Diseases"),
         activeColorPrimary: CupertinoColors.activeBlue,
         inactiveColorPrimary: CupertinoColors.systemGrey,
       ),
