@@ -11,34 +11,20 @@ class _Feedback1State extends State<Feedback1> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Feedback'),
+        title: Text('Welcome to flash Feedback!!'),
         backgroundColor: Color(0xff6190E8),
       ),
       body: Container(
         child: SingleChildScrollView(
           child: Column(children: <Widget>[
-            Row(
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(left: 20, right: 20),
-                  child: Image.network(
-                    'https://cdn.dribbble.com/users/6458339/screenshots/14690891/media/b7a8bc22c81b7c4d589a0e441a857fa9.gif',
-                    width: 350,
-                    height: 330,
-                    fit: BoxFit.contain,
-                    //alignment: Alignment.center,
-                  ),
-                ),
-              ],
-            ),
-            Row(
+            /*Row(
               children: [
                 Padding(
                   padding: EdgeInsets.only(
                     left: 15,
                   ),
                   child: Text(
-                    "Dear User,",
+                    "Welcome to flash Feedback!!",
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -47,12 +33,24 @@ class _Feedback1State extends State<Feedback1> {
                   ),
                 ),
               ],
+            ),*/
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset(
+                  'assets/images/feedback_image.gif',
+                  height: 250,
+                  width: 250,
+                ),
+              ],
             ),
+
             //https://cdn.dribbble.com/users/6458339/screenshots/14690891/media/b7a8bc22c81b7c4d589a0e441a857fa9.gif
             Container(
               margin: EdgeInsets.only(left: 15, right: 15, top: 2),
               child: Text(
-                "                 Thanks for using our app we hope that you will found it very helpful we request you to share your experience with us by clicking on the below submit button. So, that we can help more people effectively.",
+                "            Thanks for using our app, we want your valuable feedback!! Please share your experience with us to help future users to choose Best Hospital.",
                 style: TextStyle(
                   fontSize: 18,
                 ),

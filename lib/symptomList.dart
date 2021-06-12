@@ -30,6 +30,7 @@ class _SymptomListState extends State<SymptomList> {
     Symptom(name: 'Abnormal Menstruation', val: 'abnormal_menstruation'),
     Symptom(name: 'Acidity', val: 'acidity'),
     Symptom(name: 'Acute Liver Failure', val: 'acute_liver_failure'),
+    Symptom(name: 'Aches and Pains', val: 'aches_and_pains'),
     Symptom(name: 'Altered Sensorium', val: 'altered_sensorium'),
     Symptom(name: 'Anxiety', val: 'anxiety'),
     Symptom(name: 'Back Pain', val: 'back_pain'),
@@ -47,21 +48,26 @@ class _SymptomListState extends State<SymptomList> {
     Symptom(name: 'Bruising', val: 'bruising'),
     Symptom(name: 'Burning Micturition', val: 'burning_micturition'),
     Symptom(name: 'Chest Pain', val: 'chest_pain'),
+    Symptom(name: 'Chest Pressure', val: 'chest_pressure'),
     Symptom(name: 'Chills', val: 'chills'),
     Symptom(name: 'Cold Hands and Feets', val: 'cold_hands_and_feets'),
     Symptom(name: 'Coma', val: 'coma'),
     Symptom(name: 'Congestion', val: 'congestion'),
+    Symptom(name: 'Conjunctivitis', val: 'conjunctivitis'),
     Symptom(name: 'Constipation', val: 'constipation'),
     Symptom(name: 'Continuous Feel of Urine', val: 'continuous_feel_of_urine'),
     Symptom(name: 'Continuous Sneezing', val: 'continuous_sneezing'),
     Symptom(name: 'Cough', val: 'cough'),
     Symptom(name: 'Cramps', val: 'cramps'),
+    Symptom(name: 'Difficulty in Breathing', val: 'difficulty_breathing'),
+    Symptom(name: 'Dry Cough', val: 'dry_cough'),
     Symptom(name: 'Dark Urine', val: 'dark_urine'),
     Symptom(name: 'Dehydration', val: 'dehydration'),
     Symptom(name: 'Depression', val: 'depression'),
     Symptom(name: 'Diarrhoea', val: 'diarrhoea'),
     Symptom(name: 'Dischromic Patches', val: 'dischromic _patches'),
     Symptom(name: 'Distention of Abdomen', val: 'distention_of_abdomen'),
+    Symptom(name: 'Discolouration of fingers or toes', val: 'discolouration_of_fingers_or_toes'),
     Symptom(name: 'Dizziness', val: 'dizziness'),
     Symptom(name: 'Drying and Tingling Lips', val: 'drying_and_tingling_lips'),
     Symptom(name: 'Enlarged Thyroid', val: 'enlarged_thyroid'),
@@ -92,7 +98,10 @@ class _SymptomListState extends State<SymptomList> {
     Symptom(name: 'Lethargy', val: 'lethargy'),
     Symptom(name: 'Loss of Appetite', val: 'loss_of_appetite'),
     Symptom(name: 'Loss of Balance', val: 'loss_of_balance'),
+    Symptom(name: 'Loss of Movement', val: 'loss_of_movement'),
     Symptom(name: 'Loss of Smell', val: 'loss_of_smell'),
+    Symptom(name: 'Loss of Speech', val: 'loss_of_speech'),
+    Symptom(name: 'Loss of Taste', val: 'loss_of_taste'),
     Symptom(name: 'Malaise', val: 'malaise'),
     Symptom(name: 'Mild Fever', val: 'mild_fever'),
     Symptom(name: 'Mood Swings', val: 'mood_swings'),
@@ -132,6 +141,7 @@ class _SymptomListState extends State<SymptomList> {
     Symptom(name: 'Runny Nose', val: 'runny_nose'),
     Symptom(name: 'Rusty Sputum', val: 'rusty_sputum'),
     Symptom(name: 'Scurring', val: 'scurring'),
+    Symptom(name: 'Shortness of breath', val: 'shortness_of_breath'),
     Symptom(name: 'Shivering', val: 'shivering'),
     Symptom(name: 'Silver Like Dusting', val: 'silver_like_dusting'),
     Symptom(name: 'Sinus Pressure', val: 'sinus_pressure'),
@@ -141,6 +151,7 @@ class _SymptomListState extends State<SymptomList> {
     Symptom(name: 'Small Dents in Nails', val: 'small_dents_in_nails'),
     Symptom(name: 'Spinning Movements', val: 'spinning_movements'),
     Symptom(name: 'Spotting Urination', val: 'spotting_ urination'),
+    Symptom(name: 'Sore Throat', val: 'sore_throat'),
     Symptom(name: 'Stiff Neck', val: 'stiff_neck'),
     Symptom(name: 'Stomach Bleeding', val: 'stomach_bleeding'),
     Symptom(name: 'Stomach Pain', val: 'stomach_pain'),
@@ -152,6 +163,7 @@ class _SymptomListState extends State<SymptomList> {
     Symptom(name: 'Swollen Blood Vessels', val: 'swollen_blood_vessels'),
     Symptom(name: 'Swollen Extremeties', val: 'swollen_extremeties'),
     Symptom(name: 'Swollen Legs', val: 'swollen_legs'),
+    Symptom(name: 'Tiredness', val: 'tiredness'),
     Symptom(name: 'Throat Irritation', val: 'throat_irritation'),
     Symptom(name: 'Toxic Look (Typhos)', val: 'toxic_look_(typhos)'),
     Symptom(name: 'Ulcers on Tongue', val: 'ulcers_on_tongue'),
@@ -208,7 +220,7 @@ class _SymptomListState extends State<SymptomList> {
     });
   }
 
-  var locationStr;
+  var locationStr = "";
 
   List<String> hospitalName = [];
   List<String> review = [];
@@ -396,7 +408,12 @@ class _SymptomListState extends State<SymptomList> {
         backgroundColor: Color(0xff6190E8),
         onPressed: () async {
           List<String> arr = printData();
-          if (arr.isEmpty) {
+          if (locationStr.isEmpty) {
+            Fluttertoast.showToast(
+                msg: "Provide Location Permission",
+                gravity: ToastGravity.CENTER,
+                timeInSecForIos: 1);
+          } else if (arr.isEmpty) {
             Fluttertoast.showToast(
                 msg: "Select Symptoms",
                 gravity: ToastGravity.CENTER,

@@ -10,7 +10,7 @@
    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
    <uses-permission android:name="android.permission.FLASHLIGHT" />
    <application
-        android:label="Hospital"
+        android:label="HRS"
         android:icon="@mipmap/ic_launcher">
         <activity
            android:name="com.yalantis.ucrop.UCropActivity"

@@ -45,6 +45,7 @@ class _DiseaseListState extends State<DiseaseList> {
     "Chicken pox",
     "Chronic cholestasis",
     "Common Cold",
+    "Covid-19",
     "Dengue",
     "Diabetes",
     "Dimorphic hemmorhoids(piles)",
@@ -78,7 +79,7 @@ class _DiseaseListState extends State<DiseaseList> {
   ];
   List<String> filterlist = [];
   bool isSearching = false;
-  var locationStr;
+  var locationStr = "";
   List<String> arr = [];
 
   List<String> hospitalName = [];
@@ -241,7 +242,12 @@ class _DiseaseListState extends State<DiseaseList> {
         backgroundColor: Color(0xff6190E8),
         child: Icon(Icons.navigate_next),
         onPressed: () async {
-          if (disease.isEmpty) {
+          if (locationStr.isEmpty) {
+            Fluttertoast.showToast(
+                msg: "Provide Location Permission",
+                gravity: ToastGravity.CENTER,
+                timeInSecForIos: 1);
+          } else if (disease.isEmpty) {
             Fluttertoast.showToast(
                 msg: "Select Disease",
                 gravity: ToastGravity.CENTER,

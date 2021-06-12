@@ -57,7 +57,7 @@ class _LogInState extends State<LogIn> {
   @override
   Widget build(BuildContext context) {
     return FlutterLogin(
-        title: 'Hospital',
+        title: 'HRS',
         onLogin: _longIn,
         onSignup: _signUp,
         onRecoverPassword: _recoverPassword,
